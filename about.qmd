@@ -2,7 +2,7 @@
 title: "About Me"
 ---
 
-![Pranav Kolluri](pjk_headshot.jpg){.profile-photo}
+![Pranav Kolluri](images/pjk_headshot.jpg){.profile-photo}
 
 ## Bio
 

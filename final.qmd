@@ -20,7 +20,7 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 
 The weather data comes from the Rover Environmental Monitoring Station (REMS), a suite of sensors on NASA's Curiosity rover that has been recording conditions in Gale Crater since landing in August 2012. The dataset used here was downloaded from [Kaggle](https://www.kaggle.com/datasets/deepcontractor/mars-rover-environmental-monitoring-station) and covers Sol 1 through Sol 3368 (approximately January 2022), spanning nearly 10 Earth years and five full Martian years.
 
-![REMS being installed on Curiosity prior to launch. Credit: NASA/JPL-Caltech](rems_jpl_build.jpg){width=70% fig-align="center"}
+![REMS being installed on Curiosity prior to launch. Credit: NASA/JPL-Caltech](images/rems_jpl_build.jpg){width=70% fig-align="center"}
 
 Each row represents one Martian sol (day). Recorded variables include maximum and minimum air and ground temperature, atmospheric pressure, wind speed, humidity, and UV radiation index. Wind speed and humidity have substantial missing data due to sensor damage and power constraints throughout the mission. Air temperature and pressure are the most complete variables and are the focus of this visualization. Bizarrely, the weather variable is solely populated by "Sunny", and I haven't been able to figure out what precisely that variable is supposed to mean (it seems awfully coarse so it must have been derived from some combination of the other variables), so I have not included it in the visualization. The humidity and wind speed data were also Nulled out, so I was unable to add that information.
 
@@ -28,7 +28,7 @@ It's a bit unfortunate as the API that used to feed REMs data live appears to ha
 
 The rover's traverse path comes from the [MSL localized interpolated position dataset](https://an.rsl.wustl.edu/msl/AN/an3.aspx), derived from the NASA Planetary Data System, which records Curiosity's position in local Gale Crater coordinates at each drive.
 
-![REMS sensors on Curiosity on the surface of Mars. Credit: NASA](rems_mars.jpg){width=70% fig-align="center"}
+![REMS sensors on Curiosity on the surface of Mars. Credit: NASA](images/rems_mars.jpg){width=70% fig-align="center"}
 
 ---
 
@@ -239,9 +239,9 @@ makePressurePlot <- function() {
 The early versions of this visualization were effectively just the 3 other tabs, since I had the data for those. The traverse tab was originally a static ggplot: the rover's local Gale Crater coordinates (easting/northing) plotted as a colored path, with no basemap or interactivity.
 
 ::: {layout-nrow=2}
-![Early traverse tab: static ggplot on local Gale Crater coordinates](og_traverse.png){fig-align="center" width=50%}
+![Early traverse tab: static ggplot on local Gale Crater coordinates](images/og_traverse.png){fig-align="center" width=50%}
 
-![Early pressure tab: LOESS smooth was active at this stage and it looks... bad](og_pressure.png){fig-align="center"}
+![Early pressure tab: LOESS smooth was active at this stage and it looks... bad](images/og_pressure.png){fig-align="center"}
 :::
 
 I really wanted an interactive map, as I figured that it would lend a lot to the user experience; seeing the rover's path overlaid on actual Mars imagery is far more interested than just the unlabeled meter coordinates. By some sheer luck, I managed to find position data that I could use to extrapolate the rover's location for every sol, which allowed me to replace the static plot with a leaflet map using the NASA Viking MDIM21 tile set. The map ended up being my favorite part of the project, and I think it really makes the visualization stand out. It also took considerably more work than expected: getting the correct CRS, understanding `maxNativeZoom`, and wiring up the clickable sol popups via `leafletProxy` all required a fair amount of trial and error. But I'm really happy with how it turned out!

@@ -2,7 +2,7 @@
 title: "Pranav Kolluri"
 ---
 
-![Pranav Kolluri](pjk_headshot.jpg){.profile-photo}
+![Pranav Kolluri](images/pjk_headshot.jpg){.profile-photo}
 
 ::: {.hero-text}
 I'm a first-year Biomedical Engineering PhD student at OHSU, working in Dr. Xubo Song's lab on multimodal single-cell data integration and representation learning.
