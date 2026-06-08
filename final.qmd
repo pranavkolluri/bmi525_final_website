@@ -90,8 +90,8 @@ The basemap is the NASA Viking MDIM21 colorized mosaic, served at up to zoom lev
 
 ```{mermaid}
 flowchart LR
-  A[REMS_Mars_Dataset.csv\nKaggle] --> C[clean_data.r]
-  B[localized_interp.csv\nNASA PDS] --> C
+  A["REMS_Mars_Dataset.csv<br/>Kaggle"] --> C[clean_data.r]
+  B["localized_interp.csv<br/>NASA PDS"] --> C
   C --> D[curiosity_rems_clean.csv]
   C --> E[curiosity_location_clean.csv]
   D --> F[app.r]
