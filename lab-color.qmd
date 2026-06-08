@@ -1,0 +1,140 @@
+---
+title: "Lab 3: Color"
+subtitle: "When do NYC flights run late?"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+library(tidyverse)
+library(nycflights13)
+library(futurevisions)
+
+heatmap_data <- flights %>%
+  filter(!is.na(dep_delay), !is.na(hour), hour > 0) %>%
+  group_by(month, hour) %>%
+  summarise(mean_dep_delay = mean(dep_delay), n = n(), .groups = "drop") %>%
+  mutate(
+    month_label = factor(month.abb[month], levels = month.abb),
+    hour_label = sprintf("%02d:00", hour)
+  )
+```
+
+## The Data
+
+NYC flight departure data from the `nycflights13` package, covering all departures in 2013. Each row in the source data is one flight. For this chart the data is aggregated to mean departure delay by hour of day and month, giving a 19x12 grid of values.
+
+---
+
+## The Audience
+
+Anyone curious about delay patterns at one of the busiest airports in the country. No aviation background required to read the chart, though the patterns will be somewhat more familiar to operations folks who will be more aware of the context of air traffic management and how delays can cascade through the day.
+
+---
+
+## The Chart
+
+```{r echo=FALSE}
+ggplot(heatmap_data, aes(x = hour, y = month_label, fill = mean_dep_delay)) +
+  geom_tile(color = "white", linewidth = 0.4) +
+  scale_fill_gradientn(
+    colors = futurevisions("cancri"),
+    name = "Mean dep.\ndelay (min)"
+  ) +
+  scale_x_continuous(
+    breaks = 5:23,
+    labels = function(x) sprintf("%d:00", x),
+    expand = c(0, 0)
+  ) +
+  scale_y_discrete(limits = rev(month.abb)) +
+  labs(
+    title = "When do NYC flights run late?",
+    subtitle = "Mean departure delay by hour of day and month, 2013",
+    x = "Scheduled departure hour",
+    y = NULL
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    panel.grid = element_blank(),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 9),
+    plot.title = element_text(face = "bold", size = 14)
+  )
+```
+
+---
+
+## Representation
+
+The chart answers one question: when, across the year, do NYC flights tend to run late? The x-axis is hour of departure, the y-axis is month, and fill encodes mean departure delay in minutes.
+
+---
+
+## How to Read It
+
+Lighter cells mean longer average delays at that hour/month combination. Scanning left to right across a row shows how delays change through the day for a given month. Scanning top to bottom down a column shows how a particular hour behaves across the year.
+
+The most striking pattern is the cluster of high delays in June and July around 19:00-20:00. I used to work at Ames Research Center on air traffic management, and this kinda surprised me -- that hour is late for peak traffic, which suggests the delays could be cascading from earlier in the day or perhaps from delays at other airports rather than being driven by fresh demand.
+
+---
+
+## Visual Design
+
+The palette is from the `futurevisions` package (`"cancri"`), which is perceptually ordered and holds up reasonably under colorblind simulation via `colorblindr::cvd_grid()`. Futurevisions was a cool package to use at it is derived from NASA poster color palettes, and those tend to be rather excellent.
+The "bad" version below applies the categorical `"mars"` palette to continuous data, a good illustration of why sequential palettes exist.
+
+```{r echo=FALSE}
+ggplot(heatmap_data, aes(x = hour, y = month_label, fill = mean_dep_delay)) +
+  geom_tile(color = "white", linewidth = 0.4) +
+  scale_fill_gradientn(
+    colors = futurevisions("mars"),
+    name = "Mean dep.\ndelay (min)"
+  ) +
+  scale_x_continuous(breaks = 5:23, labels = function(x) sprintf("%d:00", x), expand = c(0, 0)) +
+  scale_y_discrete(limits = rev(month.abb)) +
+  labs(title = "When do NYC flights run late? (bad palette)", x = "Scheduled departure hour", y = NULL) +
+  theme_minimal(base_size = 12) +
+  theme(panel.grid = element_blank(), axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+---
+
+## How I Made It
+
+```{r eval=FALSE}
+library(tidyverse)
+library(nycflights13)
+library(futurevisions)
+
+heatmap_data <- flights %>%
+  filter(!is.na(dep_delay), !is.na(hour), hour > 0) %>%
+  group_by(month, hour) %>%
+  summarise(mean_dep_delay = mean(dep_delay), n = n(), .groups = "drop") %>%
+  mutate(
+    month_label = factor(month.abb[month], levels = month.abb),
+    hour_label = sprintf("%02d:00", hour)
+  )
+
+ggplot(heatmap_data, aes(x = hour, y = month_label, fill = mean_dep_delay)) +
+  geom_tile(color = "white", linewidth = 0.4) +
+  scale_fill_gradientn(
+    colors = futurevisions("cancri"),
+    name = "Mean dep.\ndelay (min)"
+  ) +
+  scale_x_continuous(
+    breaks = 5:23,
+    labels = function(x) sprintf("%d:00", x),
+    expand = c(0, 0)
+  ) +
+  scale_y_discrete(limits = rev(month.abb)) +
+  labs(
+    title = "When do NYC flights run late?",
+    subtitle = "Mean departure delay by hour of day and month, 2013",
+    x = "Scheduled departure hour",
+    y = NULL
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    panel.grid = element_blank(),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 9),
+    plot.title = element_text(face = "bold", size = 14)
+  )
+```

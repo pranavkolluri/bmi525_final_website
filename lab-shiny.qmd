@@ -1,0 +1,84 @@
+---
+title: "Lab 8: Shiny"
+subtitle: "Exploring PNW flight data interactively"
+---
+
+## The App
+
+<iframe src="https://pranavkolluri.github.io/pnwflights_shiny/"
+        width="100%" height="650px"
+        frameborder="0" allowfullscreen>
+</iframe>
+
+---
+
+## The Data
+
+The `pnwflights14` package covers all scheduled departures from Portland (PDX) and Seattle (SEA) in 2014; around 162,000 flights. Three tables are used: `flights` (one row per departure), `airlines` (carrier code to name lookup), and `weather` (hourly conditions at each origin airport). All three were exported to CSV before building the app so they could run in-browser via `shinylive`. `shinylive` uses WebAssembly, which means it can't access R packages at install-time, and unfortunately, PNWflights14 wasn't one of those included, so the CSVs were a workaround to get the data in.
+
+---
+
+## The Audience
+
+Potential flyers out of PDX or SEA who may want to better understand the trends of which carriers and conditions produce delays.
+
+---
+
+## The Chart
+
+A multi-tab Shiny app with three views: a bar chart, a dual-axis line chart, and a scatter plot, each with a supporting summary table.
+
+---
+
+## Representation
+
+- **Carrier Delays**: Which airlines depart on time from a selected airport? Bars show average delay per carrier, colored to distinguish on-time from late.
+- **Monthly Performance**: How does a selected airline's performance change across the year? Two lines track average delay and on-time percentage month by month.
+- **Weather vs. Delays**: Is there a relationship between visibility and delays? Each point is one day, sized by precipitation, with a linear trend line.
+
+---
+
+## How to Read It
+
+In the carrier tab, bars to the right of zero mean that carrier departs late on average; bars to the left mean it departs early. In the monthly tab, the two lines move in opposite directions: delay up, on-time rate down. In the weather tab, a downward-sloping trend line means lower visibility correlates with longer delays.
+
+---
+
+## Visual Design
+
+A consistent two-color scheme runs throughout: red (#e15759) for worse performance, blue (#4e79a7) for better. The same colors appear in all three tabs so the encoding is predictable once learned. Each chart is paired with a `gt` table for easier reading where the visual is too coarse or where the actual value is desired.
+
+---
+
+## How I Made It
+
+The app runs entirely in the browser via `shinylive`. Because shinylive uses WebAssembly, it cannot access R packages at install-time, so `pnwflights14` data was exported to plain CSVs first. The use of `shinylive` was necessitated by my desire to exclusively use Github pages to host this website. It unfortunately only supports static websites, so traditional Shiny apps were a no-go. Luckily, `shinylive` with WASM gets you most of what you need.
+
+Each tab's plot and table are built by standalone functions that take input values and return a ggplot or gt object. The server just wires inputs to render calls, keeping the logic easy to follow.
+
+```{r eval=FALSE}
+library(shiny)
+library(tidyverse)
+library(gt)
+
+flights <- read_csv("data/flights.csv", show_col_types = FALSE)
+airlines <- read_csv("data/airlines.csv", show_col_types = FALSE)
+weather <- read_csv("data/weather.csv", show_col_types = FALSE)
+
+makePlot1 <- function(origin_val) {
+  flights %>%
+    filter(origin == origin_val, !is.na(dep_delay)) %>%
+    left_join(airlines, by = "carrier") %>%
+    group_by(name) %>%
+    summarise(avg_delay = mean(dep_delay), .groups = "drop") %>%
+    arrange(avg_delay) %>%
+    mutate(name = fct_inorder(name), over = avg_delay > 0) %>%
+    ggplot(aes(x = avg_delay, y = name, fill = over)) +
+    geom_col(show.legend = FALSE) +
+    geom_vline(xintercept = 0, linewidth = 0.4, color = "grey40") +
+    scale_fill_manual(values = c("TRUE" = "#e15759", "FALSE" = "#4e79a7")) +
+    labs(title = paste0("Average Departure Delay by Carrier: ", origin_val),
+         x = "Avg Delay (minutes)", y = NULL) +
+    theme_minimal(base_size = 14)
+}
+```

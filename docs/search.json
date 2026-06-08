@@ -1,0 +1,310 @@
+[
+  {
+    "objectID": "final.html#the-data",
+    "href": "final.html#the-data",
+    "title": "Ten Years on Mars",
+    "section": "The Data",
+    "text": "The Data\nThe weather data comes from the Rover Environmental Monitoring Station (REMS), a suite of sensors on NASA’s Curiosity rover that has been recording conditions in Gale Crater since landing in August 2012. The dataset used here was downloaded from Kaggle and covers Sol 1 through Sol 3368 (approximately January 2022), spanning nearly 10 Earth years and five full Martian years.\n\n\n\nREMS being installed on Curiosity prior to launch. Credit: NASA/JPL-Caltech\n\n\nEach row represents one Martian sol (day). Recorded variables include maximum and minimum air and ground temperature, atmospheric pressure, wind speed, humidity, and UV radiation index. Wind speed and humidity have substantial missing data due to sensor damage and power constraints throughout the mission. Air temperature and pressure are the most complete variables and are the focus of this visualization. Bizarrely, the weather variable is solely populated by “Sunny”, and I haven’t been able to figure out what precisely that variable is supposed to mean (it seems awfully coarse so it must have been derived from some combination of the other variables), so I have not included it in the visualization. The humidity and wind speed data were also Nulled out, so I was unable to add that information.\nIt’s a bit unfortunate as the API that used to feed REMs data live appears to have failed at some point, and I can’t find an alternative source for cached data from that API.\nThe rover’s traverse path comes from the MSL localized interpolated position dataset, derived from the NASA Planetary Data System, which records Curiosity’s position in local Gale Crater coordinates at each drive.\n\n\n\nREMS sensors on Curiosity on the surface of Mars. Credit: NASA"
+  },
+  {
+    "objectID": "final.html#the-audience",
+    "href": "final.html#the-audience",
+    "title": "Ten Years on Mars",
+    "section": "The Audience",
+    "text": "The Audience\nThe intended audience is any curious layperson with an interest in space or Mars exploration – someone who knows generally what Curiosity is and what it does, and cares about what it has found, but has no background in planetary science or data analysis. The visualization is designed to be navigable without any prior knowledge of the data or the mission, with the traverse tab serving as an easy to use anchor before the more detailed information in time series tabs."
+  },
+  {
+    "objectID": "final.html#type-of-chart",
+    "href": "final.html#type-of-chart",
+    "title": "Ten Years on Mars",
+    "section": "Type of Chart",
+    "text": "Type of Chart\nThis visualization combines four chart types across its tabs:\n\n\n\nTab\nChart type\n\n\n\n\nTraverse\nInteractive map with colored path overlay (leaflet)\n\n\nTemperature\nRibbon chart (min/max band over time)\n\n\nSeasonal Patterns\nScatter plot with GAM smooth\n\n\nAtmospheric Pressure\nLine chart"
+  },
+  {
+    "objectID": "final.html#representation",
+    "href": "final.html#representation",
+    "title": "Ten Years on Mars",
+    "section": "Representation",
+    "text": "Representation\nEach tab tries to pose a different question about the data:\n\nTraverse: Where has Curiosity been, and how do conditions vary along that path? This is mostly an exploratory tab to get a sense of the data and the rover’s journey.\nTemperature: How has temperature (and the daily temperature swing) changed over the 10-year mission?\nSeasonal Patterns: Does Mars have a consistent, repeating seasonal climate signal, and does it hold up across multiple Martian years? This tries to represent the seasonal cycle by plotting variables against solar longitude (LS), which is Mars’s equivalent of a calendar position within the year.\nAtmospheric Pressure: Has atmospheric pressure drifted over the course of the mission, and what shape does the seasonal pressure cycle take?"
+  },
+  {
+    "objectID": "final.html#how-to-read-it",
+    "href": "final.html#how-to-read-it",
+    "title": "Ten Years on Mars",
+    "section": "How to Read It",
+    "text": "How to Read It\nThe traverse tab is the first that the view accesses, and is primarily designed as a visual way to navigate through all of the available data that is used later. It’s fairly simple to read, as it consists of a map of Gale crater onto which waypoints from each sol are plotted. The color of the waypoints encodes either the sol number (mission progress) or a temperature variable, which can be toggled with the dropdown. The user can zoom and pan around the map to explore different areas of the traverse, and clicking on a waypoint will show a popup with the sol number and date, alongside all of the data recorded for that sol (max/min air temp, max/min ground temp, pressure, UV, weather, and elevation).\nThe temperature tab allows the user to use the dropdown to select air or ground temperature. Selecting either yields a ribbon chart that shows the daily min/max range of that variable across the entire mission, with a red line showing the smoothed trend. This allows the user to see how the temperature and the daily temperature range have evolved over the course of the mission, and how they relate to each other.\nThe seasonal patterns tab plots each sol’s value against solar longitude (LS, 0-360 degrees), which is Mars’s equivalent of a calendar position within the year. Because multiple Martian years are overlaid, the repeating seasonal signal becomes more visible as a consistent pattern across the scatter. The variable dropdown offers max and min air temperature, max and min ground temperature, and atmospheric pressure. Ground temperature tends to show a more exaggerated seasonal swing than air temperature, since the surface heats and cools more directly with sun exposure than the thin atmosphere above it.\nThe atmospheric pressure tab shows the pressure readings across the entire mission as a line chart. While the yearly shape of the pressure readings are broadly similar, there’s been a uniform lowering in pressure over the course of the mission. I suspect that this may have to do with the rover’s traversal path having it moving to higher elevations over time, since pressure decreases with elevation, but I haven’t done any specific work to verify that idea."
+  },
+  {
+    "objectID": "final.html#visual-design",
+    "href": "final.html#visual-design",
+    "title": "Ten Years on Mars",
+    "section": "Visual Design",
+    "text": "Visual Design\nThe traverse tab uses the inferno palette from viridis, which is perceptually uniform and renders well in grayscale. The color encodes either mission progress (sol number) or a weather variable, giving a sense of where on the traverse different conditions were recorded.\nThe temperature and seasonal pattern tabs use a contrast-y two-color scheme: blue (#4e79a7) for the data and red (#e15759) for the smooth. The pressure tab uses the same blue for the raw line. The ribbon width in the temperature tab directly encodes the daily temperature range; a wide ribbon means a large swing between night and day.\nThe basemap is the NASA Viking MDIM21 colorized mosaic, served at up to zoom level 7 and stretched beyond that. It isn’t the greatest resolution, but it at least gives the viewer a grander view of the landscape. I did attempt to find the Mars Reconnaissance Orbiter HiRISE tiles, which would have provided much higher resolution of the areas that Curiosity actually traversed, but I was unable to find those tiles in a format where a conversion to tiles was feasible without a lot of manual work. I still kind of want to do this in the future, but for now the Voyager tiles are good enough."
+  },
+  {
+    "objectID": "final.html#how-i-made-it",
+    "href": "final.html#how-i-made-it",
+    "title": "Ten Years on Mars",
+    "section": "How I Made It",
+    "text": "How I Made It\n\nData pipeline\n\n\n\n\n\nflowchart LR\n  A[REMS_Mars_Dataset.csv\\nKaggle] --&gt; C[clean_data.r]\n  B[localized_interp.csv\\nNASA PDS] --&gt; C\n  C --&gt; D[curiosity_rems_clean.csv]\n  C --&gt; E[curiosity_location_clean.csv]\n  D --&gt; F[app.r]\n  E --&gt; F\n  F --&gt; G[Shiny App]\n\n\n\n\n\n\n\n\nCleaning\nThe raw REMS CSV has several formatting issues: dates are embedded in strings, missing values are the literal text “Value not available”, and column names include special characters. The cleaning script handles all of this in a single tidyverse pipeline.\n\nraw &lt;- read_csv(\n  \"data/REMS_Mars_Dataset.csv\",\n  na = \"Value not available\",\n  show_col_types = FALSE\n)\n\nclean &lt;- raw %&gt;%\n  rename(\n    max_ground_temp = `max_ground_temp(°C)`,\n    min_ground_temp = `min_ground_temp(°C)`,\n    max_air_temp = `max_air_temp(°C)`,\n    min_air_temp = `min_air_temp(°C)`,\n    pressure = `mean_pressure(Pa)`,\n    wind_speed = `wind_speed(m/h)`,\n    humidity = `humidity(%)`,\n    uv = UV_Radiation\n  ) %&gt;%\n  mutate(\n    earth_date = as.Date(str_extract(earth_date_time, \"\\\\d{4}-\\\\d{2}-\\\\d{2}\")),\n    mars_month = as.integer(str_extract(mars_date_time, \"(?&lt;=Month )\\\\d+\")),\n    ls = as.numeric(str_extract(mars_date_time, \"(?&lt;=LS )\\\\d+\")),\n    sol = as.integer(str_extract(sol_number, \"\\\\d+\"))\n  ) %&gt;%\n  select(sol, earth_date, mars_month, ls, max_air_temp, min_air_temp,\n         max_ground_temp, min_ground_temp, pressure, wind_speed, humidity,\n         uv, weather, sunrise, sunset) %&gt;%\n  arrange(sol)\n\nThe location data is filtered to ROVER-frame records and reduced to one position per sol by taking the last recorded position of each sol.\n\nlocation &lt;- read_csv(\"data/localized_interp.csv\", show_col_types = FALSE) %&gt;%\n  filter(frame == \"ROVER\", sol &gt;= 0) %&gt;%\n  group_by(sol) %&gt;%\n  slice_tail(n = 1) %&gt;%\n  ungroup() %&gt;%\n  select(sol, easting, northing, elevation,\n         latitude = planetodetic_latitude, longitude) %&gt;%\n  arrange(sol)\n\n\n\nThe app\nThe app is built with R Shiny and uses leaflet for the traverse map. The initial map render sets the CRS to L.CRS.EPSG4326 to match the equirectangular projection of the NASA Trek tiles, and maxNativeZoom = 7 tells leaflet to upscale the zoom-7 tiles rather than request tiles that do not exist at higher zoom levels. When this constraint is not set, leaflet will attenpt and fail to fetch higher zoom tiles, so the user instead sees a blank map.\n\noutput$map &lt;- renderLeaflet({\n  leaflet(options = leafletOptions(crs = leafletCRS(\"L.CRS.EPSG4326\"))) %&gt;%\n    addTiles(urlTemplate = mars_tiles, attribution = \"NASA Mars Trek\",\n             options = tileOptions(maxNativeZoom = 7, maxZoom = 18)) %&gt;%\n    setView(lng = 137.4, lat = -4.6, zoom = 6) %&gt;%\n    addScaleBar(position = \"bottomleft\")\n})\n\nThe traverse markers are updated reactively via leafletProxy when the color variable changes, so the basemap tiles are not re-fetched on each interaction.\nThe temperature ribbon uses geom_ribbon for the daily min/max band and a midline geom_line for the mean. The function dispatches on “air” or “ground” to select the right columns and color.\n\nmakeTempPlot &lt;- function(temp_type) {\n  if (temp_type == \"air\") {\n    dat &lt;- weather %&gt;%\n      filter(!is.na(max_air_temp), !is.na(min_air_temp)) %&gt;%\n      mutate(lo = min_air_temp, hi = max_air_temp, mid = (lo + hi) / 2)\n    col &lt;- \"#4e79a7\"\n    lbl &lt;- \"Air Temperature (°C)\"\n  } else {\n    dat &lt;- weather %&gt;%\n      filter(!is.na(max_ground_temp), !is.na(min_ground_temp)) %&gt;%\n      mutate(lo = min_ground_temp, hi = max_ground_temp, mid = (lo + hi) / 2)\n    col &lt;- \"#e15759\"\n    lbl &lt;- \"Ground Temperature (°C)\"\n  }\n\n  ggplot(dat, aes(x = earth_date)) +\n    geom_ribbon(aes(ymin = lo, ymax = hi), fill = col, alpha = 0.4) +\n    geom_line(aes(y = mid), color = col, linewidth = 0.3) +\n    labs(title = paste(lbl, \"Range -- Curiosity Mission\"),\n         x = NULL, y = lbl) +\n    theme_minimal(base_size = 14)\n}\n\nThe seasonal patterns tab plots all sols against solar longitude (LS, 0–360°), overlaying all Martian years so the repeating seasonal cycle is visible as a consistent pattern across the scatter. A GAM smooth with a cyclic cubic spline (bs = \"cc\") is used rather than LOESS because the relationship between LS and temperature or pressure is periodic – LOESS would produce a discontinuity at the 0°/360° seam where the seasons wrap.\n\nmakeSeasonPlot &lt;- function(var) {\n  lbl &lt;- switch(var,\n    \"max_air_temp\"    = \"Max Air Temp (°C)\",\n    \"min_air_temp\"    = \"Min Air Temp (°C)\",\n    \"max_ground_temp\" = \"Max Ground Temp (°C)\",\n    \"min_ground_temp\" = \"Min Ground Temp (°C)\",\n    \"pressure\"        = \"Pressure (Pa)\"\n  )\n\n  dat &lt;- weather %&gt;%\n    select(ls, y = all_of(var)) %&gt;%\n    filter(!is.na(ls), !is.na(y))\n\n  ggplot(dat, aes(x = ls, y = y)) +\n    geom_point(alpha = 0.25, size = 0.9, color = \"#4e79a7\") +\n    geom_smooth(method = \"gam\",\n                formula = y ~ s(x, bs = \"cc\", k = 20),\n                se = FALSE, color = \"#e15759\", linewidth = 1) +\n    scale_x_continuous(\n      breaks = c(0, 90, 180, 270, 360),\n      labels = c(\"0\\n(N. Spring)\", \"90\\n(N. Summer)\",\n                 \"180\\n(N. Autumn)\", \"270\\n(N. Winter)\", \"360\")\n    ) +\n    labs(title = paste(lbl, \"by Solar Longitude\"),\n         subtitle = \"All Mars years overlaid\",\n         x = \"Solar Longitude (LS)\", y = lbl) +\n    theme_minimal(base_size = 14)\n}\n\nThe atmospheric pressure tab is a simple line chart of pressure over the full mission with no smoothing overlay.\n\nmakePressurePlot &lt;- function() {\n  weather %&gt;%\n    filter(!is.na(pressure)) %&gt;%\n    ggplot(aes(x = earth_date, y = pressure)) +\n    geom_line(color = \"#4e79a7\", linewidth = 0.4, alpha = 0.8) +\n    labs(title = \"Atmospheric Pressure -- Curiosity Mission\",\n         x = NULL, y = \"Pressure (Pa)\") +\n    theme_minimal(base_size = 14)\n}\n\nThe early versions of this visualization were effectively just the 3 other tabs, since I had the data for those. The traverse tab was originally a static ggplot: the rover’s local Gale Crater coordinates (easting/northing) plotted as a colored path, with no basemap or interactivity.\n\n\n\n\n\n\nEarly traverse tab: static ggplot on local Gale Crater coordinates\n\n\n\n\n\n\n\n\n\nEarly pressure tab: LOESS smooth was active at this stage and it looks… bad\n\n\n\n\n\nI really wanted an interactive map, as I figured that it would lend a lot to the user experience; seeing the rover’s path overlaid on actual Mars imagery is far more interested than just the unlabeled meter coordinates. By some sheer luck, I managed to find position data that I could use to extrapolate the rover’s location for every sol, which allowed me to replace the static plot with a leaflet map using the NASA Viking MDIM21 tile set. The map ended up being my favorite part of the project, and I think it really makes the visualization stand out. It also took considerably more work than expected: getting the correct CRS, understanding maxNativeZoom, and wiring up the clickable sol popups via leafletProxy all required a fair amount of trial and error. But I’m really happy with how it turned out!\nThe full source code (both clean_data.r and app.r) is available on GitHub."
+  },
+  {
+    "objectID": "lab-maps.html",
+    "href": "lab-maps.html",
+    "title": "Lab 7: Maps",
+    "section": "",
+    "text": "Two sources were joined together: Portland neighborhood boundary shapefiles from the City of Portland open data portal, and 2010 Census population data broken out by age group (under 18, 18-64, 65 and older) at the neighborhood level. The census data required some name-matching cleanup to align with the shapefile’s neighborhood labels."
+  },
+  {
+    "objectID": "lab-maps.html#the-data",
+    "href": "lab-maps.html#the-data",
+    "title": "Lab 7: Maps",
+    "section": "",
+    "text": "Two sources were joined together: Portland neighborhood boundary shapefiles from the City of Portland open data portal, and 2010 Census population data broken out by age group (under 18, 18-64, 65 and older) at the neighborhood level. The census data required some name-matching cleanup to align with the shapefile’s neighborhood labels."
+  },
+  {
+    "objectID": "lab-maps.html#the-audience",
+    "href": "lab-maps.html#the-audience",
+    "title": "Lab 7: Maps",
+    "section": "The Audience",
+    "text": "The Audience\nCity planners, public health researchers, or anyone interested in how age distribution maps onto urban geography in Portland."
+  },
+  {
+    "objectID": "lab-maps.html#the-chart",
+    "href": "lab-maps.html#the-chart",
+    "title": "Lab 7: Maps",
+    "section": "The Chart",
+    "text": "The Chart"
+  },
+  {
+    "objectID": "lab-maps.html#representation",
+    "href": "lab-maps.html#representation",
+    "title": "Lab 7: Maps",
+    "section": "Representation",
+    "text": "Representation\nEach panel shows one age group’s share of its neighborhood’s total population. The question is whether age concentrations are geographically clustered or spread uniformly across the city."
+  },
+  {
+    "objectID": "lab-maps.html#how-to-read-it",
+    "href": "lab-maps.html#how-to-read-it",
+    "title": "Lab 7: Maps",
+    "section": "How to Read It",
+    "text": "How to Read It\nDarker fill means a higher proportion of that neighborhood belongs to the age group shown in that panel. Compare the three panels side by side; neighborhoods dark in the under-18 panel tend to be lighter in the 65+ panel, and vice versa.\nThe break method is Jenks natural breaks, chosen after comparing equal interval, quantile, standard deviation, and Jenks. Jenks performed best because it kept the flat middle of the distribution from being lumped into the top bucket, making the geographic variation more visible."
+  },
+  {
+    "objectID": "lab-maps.html#visual-design",
+    "href": "lab-maps.html#visual-design",
+    "title": "Lab 7: Maps",
+    "section": "Visual Design",
+    "text": "Visual Design\nA single sequential YlOrRd palette is shared across all three panels so comparisons are valid – the same color means the same proportion in every panel. The Willamette River appears in light blue as a geographic point of interest (PoI) for those more familiar with the area. Axis text and ticks are removed since exact coordinates add nothing useful here."
+  },
+  {
+    "objectID": "lab-maps.html#how-i-made-it",
+    "href": "lab-maps.html#how-i-made-it",
+    "title": "Lab 7: Maps",
+    "section": "How I Made It",
+    "text": "How I Made It\n\nlibrary(tidyverse)\nlibrary(sf)\nlibrary(readxl)\nlibrary(classInt)\n\npdx_boundaries &lt;- st_read(\"data/Neighborhoods__Regions_-shp\")\nriver_boundaries &lt;- st_read(\"data/Willamette_Columbia_River_Ordinary_High_Water-shp/\")\n\npdx_population &lt;- read_excel(\"data/Census_2010_Data_Cleanedup.xlsx\",\n  sheet = \"Census_2010_Neighborhoods\", range = \"A7:B101\",\n  col_names = c(\"Neighborhood\", \"Total.Pop\")) %&gt;%\n  mutate(Neighborhood = as.factor(Neighborhood))\n\npdx_age &lt;- read_excel(\"data/Census_2010_Data_Cleanedup.xlsx\",\n  sheet = \"Census_2010_Neighborhoods\", range = \"CA7:CC101\",\n  col_names = c(\"Pop.Under18\", \"drop\", \"Pop.65plus\")) %&gt;%\n  select(-drop) %&gt;%\n  mutate(across(everything(), as.numeric))\n\npdx_population &lt;- bind_cols(pdx_population, pdx_age) %&gt;%\n  mutate(Pop.18to64 = Total.Pop - Pop.Under18 - Pop.65plus)\n\nboundaries_with_pop &lt;- pdx_boundaries %&gt;%\n  mutate(Neighborhood = toupper(MAPLABEL)) %&gt;%\n  left_join(pdx_population %&gt;% mutate(Neighborhood = as.character(Neighborhood)),\n            by = \"Neighborhood\") %&gt;%\n  mutate(\n    prop_under18 = Pop.Under18 / Total.Pop,\n    prop_18to64 = Pop.18to64 / Total.Pop,\n    prop_65plus = Pop.65plus / Total.Pop\n  )\n\nall_props &lt;- na.omit(c(boundaries_with_pop$prop_under18,\n                        boundaries_with_pop$prop_18to64,\n                        boundaries_with_pop$prop_65plus))\njenks_breaks &lt;- classIntervals(all_props, n = 6, style = \"jenks\")$brks\n\nboundaries_with_pop %&gt;%\n  pivot_longer(cols = c(prop_under18, prop_18to64, prop_65plus),\n               names_to = \"age_group\", values_to = \"proportion\") %&gt;%\n  mutate(\n    age_group = recode(age_group,\n      prop_under18 = \"&lt; 18\", prop_18to64 = \"18-64\", prop_65plus = \"&gt;= 65\") %&gt;%\n      factor(levels = c(\"&lt; 18\", \"18-64\", \"&gt;= 65\")),\n    prop_bin = cut(proportion, breaks = jenks_breaks, include.lowest = TRUE)\n  ) %&gt;%\n  ggplot() +\n  geom_sf(aes(fill = prop_bin)) +\n  geom_sf(data = river_boundaries, fill = \"lightblue\", size = 0.0) +\n  scale_fill_brewer(palette = \"YlOrRd\", name = \"% of neighborhood\", na.value = \"grey80\") +\n  facet_wrap(~age_group) +\n  ggtitle(\"Share of Population by Age Group, Jenks Breaks\") +\n  theme_minimal() +\n  theme(axis.text = element_blank(), axis.ticks = element_blank())"
+  },
+  {
+    "objectID": "lab-color.html",
+    "href": "lab-color.html",
+    "title": "Lab 3: Color",
+    "section": "",
+    "text": "NYC flight departure data from the nycflights13 package, covering all departures in 2013. Each row in the source data is one flight. For this chart the data is aggregated to mean departure delay by hour of day and month, giving a 19x12 grid of values."
+  },
+  {
+    "objectID": "lab-color.html#the-data",
+    "href": "lab-color.html#the-data",
+    "title": "Lab 3: Color",
+    "section": "",
+    "text": "NYC flight departure data from the nycflights13 package, covering all departures in 2013. Each row in the source data is one flight. For this chart the data is aggregated to mean departure delay by hour of day and month, giving a 19x12 grid of values."
+  },
+  {
+    "objectID": "lab-color.html#the-audience",
+    "href": "lab-color.html#the-audience",
+    "title": "Lab 3: Color",
+    "section": "The Audience",
+    "text": "The Audience\nAnyone curious about delay patterns at one of the busiest airports in the country. No aviation background required to read the chart, though the patterns will be somewhat more familiar to operations folks who will be more aware of the context of air traffic management and how delays can cascade through the day."
+  },
+  {
+    "objectID": "lab-color.html#the-chart",
+    "href": "lab-color.html#the-chart",
+    "title": "Lab 3: Color",
+    "section": "The Chart",
+    "text": "The Chart"
+  },
+  {
+    "objectID": "lab-color.html#representation",
+    "href": "lab-color.html#representation",
+    "title": "Lab 3: Color",
+    "section": "Representation",
+    "text": "Representation\nThe chart answers one question: when, across the year, do NYC flights tend to run late? The x-axis is hour of departure, the y-axis is month, and fill encodes mean departure delay in minutes."
+  },
+  {
+    "objectID": "lab-color.html#how-to-read-it",
+    "href": "lab-color.html#how-to-read-it",
+    "title": "Lab 3: Color",
+    "section": "How to Read It",
+    "text": "How to Read It\nLighter cells mean longer average delays at that hour/month combination. Scanning left to right across a row shows how delays change through the day for a given month. Scanning top to bottom down a column shows how a particular hour behaves across the year.\nThe most striking pattern is the cluster of high delays in June and July around 19:00-20:00. I used to work at Ames Research Center on air traffic management, and this kinda surprised me – that hour is late for peak traffic, which suggests the delays could be cascading from earlier in the day or perhaps from delays at other airports rather than being driven by fresh demand."
+  },
+  {
+    "objectID": "lab-color.html#visual-design",
+    "href": "lab-color.html#visual-design",
+    "title": "Lab 3: Color",
+    "section": "Visual Design",
+    "text": "Visual Design\nThe palette is from the futurevisions package (\"cancri\"), which is perceptually ordered and holds up reasonably under colorblind simulation via colorblindr::cvd_grid(). Futurevisions was a cool package to use at it is derived from NASA poster color palettes, and those tend to be rather excellent. The “bad” version below applies the categorical \"mars\" palette to continuous data, a good illustration of why sequential palettes exist."
+  },
+  {
+    "objectID": "lab-color.html#how-i-made-it",
+    "href": "lab-color.html#how-i-made-it",
+    "title": "Lab 3: Color",
+    "section": "How I Made It",
+    "text": "How I Made It\n\nlibrary(tidyverse)\nlibrary(nycflights13)\nlibrary(futurevisions)\n\nheatmap_data &lt;- flights %&gt;%\n  filter(!is.na(dep_delay), !is.na(hour), hour &gt; 0) %&gt;%\n  group_by(month, hour) %&gt;%\n  summarise(mean_dep_delay = mean(dep_delay), n = n(), .groups = \"drop\") %&gt;%\n  mutate(\n    month_label = factor(month.abb[month], levels = month.abb),\n    hour_label = sprintf(\"%02d:00\", hour)\n  )\n\nggplot(heatmap_data, aes(x = hour, y = month_label, fill = mean_dep_delay)) +\n  geom_tile(color = \"white\", linewidth = 0.4) +\n  scale_fill_gradientn(\n    colors = futurevisions(\"cancri\"),\n    name = \"Mean dep.\\ndelay (min)\"\n  ) +\n  scale_x_continuous(\n    breaks = 5:23,\n    labels = function(x) sprintf(\"%d:00\", x),\n    expand = c(0, 0)\n  ) +\n  scale_y_discrete(limits = rev(month.abb)) +\n  labs(\n    title = \"When do NYC flights run late?\",\n    subtitle = \"Mean departure delay by hour of day and month, 2013\",\n    x = \"Scheduled departure hour\",\n    y = NULL\n  ) +\n  theme_minimal(base_size = 12) +\n  theme(\n    panel.grid = element_blank(),\n    axis.text.x = element_text(angle = 45, hjust = 1, size = 9),\n    plot.title = element_text(face = \"bold\", size = 14)\n  )"
+  },
+  {
+    "objectID": "lab-shiny.html#the-data",
+    "href": "lab-shiny.html#the-data",
+    "title": "Lab 8: Shiny",
+    "section": "The Data",
+    "text": "The Data\nThe pnwflights14 package covers all scheduled departures from Portland (PDX) and Seattle (SEA) in 2014; around 162,000 flights. Three tables are used: flights (one row per departure), airlines (carrier code to name lookup), and weather (hourly conditions at each origin airport). All three were exported to CSV before building the app so they could run in-browser via shinylive. shinylive uses WebAssembly, which means it can’t access R packages at install-time, and unfortunately, PNWflights14 wasn’t one of those included, so the CSVs were a workaround to get the data in."
+  },
+  {
+    "objectID": "lab-shiny.html#the-audience",
+    "href": "lab-shiny.html#the-audience",
+    "title": "Lab 8: Shiny",
+    "section": "The Audience",
+    "text": "The Audience\nPotential flyers out of PDX or SEA who may want to better understand the trends of which carriers and conditions produce delays."
+  },
+  {
+    "objectID": "lab-shiny.html#the-chart",
+    "href": "lab-shiny.html#the-chart",
+    "title": "Lab 8: Shiny",
+    "section": "The Chart",
+    "text": "The Chart\nA multi-tab Shiny app with three views: a bar chart, a dual-axis line chart, and a scatter plot, each with a supporting summary table."
+  },
+  {
+    "objectID": "lab-shiny.html#representation",
+    "href": "lab-shiny.html#representation",
+    "title": "Lab 8: Shiny",
+    "section": "Representation",
+    "text": "Representation\n\nCarrier Delays: Which airlines depart on time from a selected airport? Bars show average delay per carrier, colored to distinguish on-time from late.\nMonthly Performance: How does a selected airline’s performance change across the year? Two lines track average delay and on-time percentage month by month.\nWeather vs. Delays: Is there a relationship between visibility and delays? Each point is one day, sized by precipitation, with a linear trend line."
+  },
+  {
+    "objectID": "lab-shiny.html#how-to-read-it",
+    "href": "lab-shiny.html#how-to-read-it",
+    "title": "Lab 8: Shiny",
+    "section": "How to Read It",
+    "text": "How to Read It\nIn the carrier tab, bars to the right of zero mean that carrier departs late on average; bars to the left mean it departs early. In the monthly tab, the two lines move in opposite directions: delay up, on-time rate down. In the weather tab, a downward-sloping trend line means lower visibility correlates with longer delays."
+  },
+  {
+    "objectID": "lab-shiny.html#visual-design",
+    "href": "lab-shiny.html#visual-design",
+    "title": "Lab 8: Shiny",
+    "section": "Visual Design",
+    "text": "Visual Design\nA consistent two-color scheme runs throughout: red (#e15759) for worse performance, blue (#4e79a7) for better. The same colors appear in all three tabs so the encoding is predictable once learned. Each chart is paired with a gt table for easier reading where the visual is too coarse or where the actual value is desired."
+  },
+  {
+    "objectID": "lab-shiny.html#how-i-made-it",
+    "href": "lab-shiny.html#how-i-made-it",
+    "title": "Lab 8: Shiny",
+    "section": "How I Made It",
+    "text": "How I Made It\nThe app runs entirely in the browser via shinylive. Because shinylive uses WebAssembly, it cannot access R packages at install-time, so pnwflights14 data was exported to plain CSVs first. The use of shinylive was necessitated by my desire to exclusively use Github pages to host this website. It unfortunately only supports static websites, so traditional Shiny apps were a no-go. Luckily, shinylive with WASM gets you most of what you need.\nEach tab’s plot and table are built by standalone functions that take input values and return a ggplot or gt object. The server just wires inputs to render calls, keeping the logic easy to follow.\n\nlibrary(shiny)\nlibrary(tidyverse)\nlibrary(gt)\n\nflights &lt;- read_csv(\"data/flights.csv\", show_col_types = FALSE)\nairlines &lt;- read_csv(\"data/airlines.csv\", show_col_types = FALSE)\nweather &lt;- read_csv(\"data/weather.csv\", show_col_types = FALSE)\n\nmakePlot1 &lt;- function(origin_val) {\n  flights %&gt;%\n    filter(origin == origin_val, !is.na(dep_delay)) %&gt;%\n    left_join(airlines, by = \"carrier\") %&gt;%\n    group_by(name) %&gt;%\n    summarise(avg_delay = mean(dep_delay), .groups = \"drop\") %&gt;%\n    arrange(avg_delay) %&gt;%\n    mutate(name = fct_inorder(name), over = avg_delay &gt; 0) %&gt;%\n    ggplot(aes(x = avg_delay, y = name, fill = over)) +\n    geom_col(show.legend = FALSE) +\n    geom_vline(xintercept = 0, linewidth = 0.4, color = \"grey40\") +\n    scale_fill_manual(values = c(\"TRUE\" = \"#e15759\", \"FALSE\" = \"#4e79a7\")) +\n    labs(title = paste0(\"Average Departure Delay by Carrier: \", origin_val),\n         x = \"Avg Delay (minutes)\", y = NULL) +\n    theme_minimal(base_size = 14)\n}"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About Me",
+    "section": "",
+    "text": "Pranav Kolluri"
+  },
+  {
+    "objectID": "about.html#bio",
+    "href": "about.html#bio",
+    "title": "About Me",
+    "section": "Bio",
+    "text": "Bio\nI am a first-year graduate student in the Biomedical Engineering program at Oregon Health & Science University (OHSU), where I work in the lab of Dr. Xubo Song. My research sits at the intersection of machine learning and computational biology, with a current focus on multimodal single-cell data integration – for example, jointly modeling scRNA-seq and scATAC-seq to translate between modalities and learn unified biological representations. I am also working on problems in hierarchical and equivariant representation learning and reinforcement learning applied to biological systems.\nBefore OHSU, I spent two years as an Aerospace Engineer at NASA Ames Research Center, where I built machine learning systems for real-time airport traffic and routing optimization, trained speech recognition models for air traffic control audio, and simulated electrified aircraft powertrain demonstrations using the National Airspace Digital Twin. I also conducted research at the UCSF Bone Quality Research Laboratory, developing CNN and transformer pipelines for automatic motion artifact grading of HR-pQCT scans and investigating how Type 2 Diabetes affects bone vascular structure and fracture risk.\nI hold a B.S. in Electrical Engineering and Computer Science with Honors concentration in Molecular and Cellular Biology from UC Berkeley (Class of 2024).\nOutside of research, I enjoy LEGO, gardening, cooking, bird watching, plane spotting, building drones, and 3D printing."
+  },
+  {
+    "objectID": "about.html#education",
+    "href": "about.html#education",
+    "title": "About Me",
+    "section": "Education",
+    "text": "Education\n\nB.S. Electrical Engineering and Computer Science (Honors concentration in Molecular and Cellular Biology), UC Berkeley, 2024\nM.S./Ph.D. Biomedical Engineering (in progress), OHSU, 2025-present"
+  },
+  {
+    "objectID": "about.html#research-interests",
+    "href": "about.html#research-interests",
+    "title": "About Me",
+    "section": "Research Interests",
+    "text": "Research Interests\n\nMultimodal single-cell omics\nRepresentation learning for biological data\nReinforcement learning in biomedical contexts\nComputational imaging and deep learning for medical image analysis\nExplainability and interpretability in machine learning models for biology"
+  },
+  {
+    "objectID": "about.html#skills-and-tools",
+    "href": "about.html#skills-and-tools",
+    "title": "About Me",
+    "section": "Skills and Tools",
+    "text": "Skills and Tools\n\n\n\nCategory\nTools\n\n\n\n\nML / DL\nPyTorch, TensorFlow, Scikit-learn, CUDA\n\n\nLanguages\nPython, R, Java, C, C++, Go\n\n\nLow-level / HW\nVerilog, RISC-V ISA, SolidWorks (CAD)\n\n\nData and Viz\ntidyverse, ggplot2, Quarto, MATLAB, SQL\n\n\nInfra\nGit, Linux, all the essential tools"
+  },
+  {
+    "objectID": "about.html#contact",
+    "href": "about.html#contact",
+    "title": "About Me",
+    "section": "Contact",
+    "text": "Contact\n\nEmail: kolluri [at] ohsu.edu\nGitHub: pranavkolluri"
+  },
+  {
+    "objectID": "lab-moma.html",
+    "href": "lab-moma.html",
+    "title": "Lab 2: MoMA",
+    "section": "",
+    "text": "The dataset is a cleaned export of the Museum of Modern Art’s public collection database, covering paintings in their collection with known creation and acquisition dates. Each row is one piece of art, with fields for title, artist, year created, year acquired, and artist gender.\nThe variable that’d I’ve derived from this is the acquisition delay: the number of years between when a painting was made and when MoMA acquired it. This is then compared between male, female, and unknown artists to see if there are differences in how quickly MoMA has acquired work."
+  },
+  {
+    "objectID": "lab-moma.html#the-data",
+    "href": "lab-moma.html#the-data",
+    "title": "Lab 2: MoMA",
+    "section": "",
+    "text": "The dataset is a cleaned export of the Museum of Modern Art’s public collection database, covering paintings in their collection with known creation and acquisition dates. Each row is one piece of art, with fields for title, artist, year created, year acquired, and artist gender.\nThe variable that’d I’ve derived from this is the acquisition delay: the number of years between when a painting was made and when MoMA acquired it. This is then compared between male, female, and unknown artists to see if there are differences in how quickly MoMA has acquired work."
+  },
+  {
+    "objectID": "lab-moma.html#the-audience",
+    "href": "lab-moma.html#the-audience",
+    "title": "Lab 2: MoMA",
+    "section": "The Audience",
+    "text": "The Audience\nAnyone curious about how art institutions acquire work over time, with the assumption of no prior knowledge of the collection or art history. The chart is thus designed to be visually simple."
+  },
+  {
+    "objectID": "lab-moma.html#the-chart",
+    "href": "lab-moma.html#the-chart",
+    "title": "Lab 2: MoMA",
+    "section": "The Chart",
+    "text": "The Chart"
+  },
+  {
+    "objectID": "lab-moma.html#representation",
+    "href": "lab-moma.html#representation",
+    "title": "Lab 2: MoMA",
+    "section": "Representation",
+    "text": "Representation\nThe chart tries to answer the question: has MoMA gotten faster at acquiring work, and does that differ by artist gender? Each point is one painting. Position on x encodes when it was painted; position on y encodes how many years passed before MoMA acquired it."
+  },
+  {
+    "objectID": "lab-moma.html#how-to-read-it",
+    "href": "lab-moma.html#how-to-read-it",
+    "title": "Lab 2: MoMA",
+    "section": "How to Read It",
+    "text": "How to Read It\nPoints near the bottom were acquired quickly after being made. Points near the top sat outside the collection for a long time. The smooth curves try to summarize the trend for each gender group; follow them left to right to see how acquisition speed has changed across different eras of the collection."
+  },
+  {
+    "objectID": "lab-moma.html#visual-design",
+    "href": "lab-moma.html#visual-design",
+    "title": "Lab 2: MoMA",
+    "section": "Visual Design",
+    "text": "Visual Design\nLOESS is used rather than linear regression, since there is no real reason to assume the relationship is linear across the 150-year span. Alpha is used on the points and keeps the overplotting readable. Color is used only to distinguish the two gender groups, not to encode magnitude, which should help with visual clarity."
+  },
+  {
+    "objectID": "lab-moma.html#how-i-made-it",
+    "href": "lab-moma.html#how-i-made-it",
+    "title": "Lab 2: MoMA",
+    "section": "How I Made It",
+    "text": "How I Made It\n\nlibrary(tidyverse)\nlibrary(ggthemes)\n\nmoma_data &lt;- read_csv(\"data/artworks-cleaned.csv\")\n\nmoma_delay &lt;- moma_data %&gt;%\n  filter(!is.na(year_created), !is.na(year_acquired)) %&gt;%\n  mutate(acquisition_delay = year_acquired - year_created) %&gt;%\n  filter(acquisition_delay &gt;= 0)\n\nggplot(moma_delay, aes(x = year_created, y = acquisition_delay)) +\n  geom_point(aes(color = artist_gender), alpha = 0.3) +\n  geom_smooth(aes(color = artist_gender), method = \"loess\", se = FALSE) +\n  labs(\n    title = \"Time Between Creation and Acquisition of MoMA Paintings\",\n    subtitle = \"Acquisition delays decrease over time, with differences by artist gender\",\n    x = \"Year painted\",\n    y = \"Years until acquisition\",\n    color = \"Artist gender\"\n  ) +\n  theme_fivethirtyeight()"
+  }
+]

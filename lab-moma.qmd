@@ -1,0 +1,93 @@
+---
+title: "Lab 2: MoMA"
+subtitle: "How long did it take MoMA to notice you?"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+library(tidyverse)
+library(ggthemes)
+
+moma_data <- read_csv("data/artworks-cleaned.csv")
+
+moma_delay <- moma_data %>%
+  filter(!is.na(year_created), !is.na(year_acquired)) %>%
+  mutate(acquisition_delay = year_acquired - year_created) %>%
+  filter(acquisition_delay >= 0)
+```
+
+## The Data
+
+The dataset is a cleaned export of the [Museum of Modern Art's public collection database](https://github.com/MuseumofModernArt/collection), covering paintings in their collection with known creation and acquisition dates. Each row is one piece of art, with fields for title, artist, year created, year acquired, and artist gender.
+
+The variable that'd I've derived from this is the acquisition delay: the number of years between when a painting was made and when MoMA acquired it. This is then compared between male, female, and unknown artists to see if there are differences in how quickly MoMA has acquired work.
+
+---
+
+## The Audience
+
+Anyone curious about how art institutions acquire work over time, with the assumption of no prior knowledge of the collection or art history. The chart is thus designed to be visually simple.
+
+---
+
+## The Chart
+
+```{r echo=FALSE, fig.width=8}
+ggplot(moma_delay, aes(x = year_created, y = acquisition_delay)) +
+  geom_point(aes(color = artist_gender), alpha = 0.3) +
+  geom_smooth(aes(color = artist_gender), method = "loess", se = FALSE) +
+  labs(
+    title = "Time Between Creation and Acquisition of MoMA Paintings",
+    subtitle = "Acquisition delays decrease over time, with differences by artist gender",
+    x = "Year painted",
+    y = "Years until acquisition",
+    color = "Artist gender"
+  ) +
+  theme_fivethirtyeight()
+```
+
+---
+
+## Representation
+
+The chart tries to answer the question: has MoMA gotten faster at acquiring work, and does that differ by artist gender? Each point is one painting. Position on x encodes when it was painted; position on y encodes how many years passed before MoMA acquired it.
+
+---
+
+## How to Read It
+
+Points near the bottom were acquired quickly after being made. Points near the top sat outside the collection for a long time. The smooth curves try to summarize the trend for each gender group; follow them left to right to see how acquisition speed has changed across different eras of the collection.
+
+---
+
+## Visual Design
+
+LOESS is used rather than linear regression, since there is no real reason to assume the relationship is linear across the 150-year span. Alpha is used on the points and keeps the overplotting readable. Color is used only to distinguish the two gender groups, not to encode magnitude, which should help with visual clarity.
+
+---
+
+## How I Made It
+
+```{r eval=FALSE}
+library(tidyverse)
+library(ggthemes)
+
+moma_data <- read_csv("data/artworks-cleaned.csv")
+
+moma_delay <- moma_data %>%
+  filter(!is.na(year_created), !is.na(year_acquired)) %>%
+  mutate(acquisition_delay = year_acquired - year_created) %>%
+  filter(acquisition_delay >= 0)
+
+ggplot(moma_delay, aes(x = year_created, y = acquisition_delay)) +
+  geom_point(aes(color = artist_gender), alpha = 0.3) +
+  geom_smooth(aes(color = artist_gender), method = "loess", se = FALSE) +
+  labs(
+    title = "Time Between Creation and Acquisition of MoMA Paintings",
+    subtitle = "Acquisition delays decrease over time, with differences by artist gender",
+    x = "Year painted",
+    y = "Years until acquisition",
+    color = "Artist gender"
+  ) +
+  theme_fivethirtyeight()
+```

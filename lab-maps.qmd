@@ -1,0 +1,160 @@
+---
+title: "Lab 7: Maps"
+subtitle: "Who lives where in Portland?"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+library(tidyverse)
+library(sf)
+library(readxl)
+library(classInt)
+
+pdx_boundaries <- st_read("data/Neighborhoods__Regions_-shp")
+river_boundaries <- st_read("data/Willamette_Columbia_River_Ordinary_High_Water-shp/")
+
+pdx_population <- read_excel("data/Census_2010_Data_Cleanedup.xlsx",
+  sheet = "Census_2010_Neighborhoods", range = "A7:B101",
+  col_names = c("Neighborhood", "Total.Pop")) %>%
+  mutate(Neighborhood = as.factor(Neighborhood))
+
+pdx_age <- read_excel("data/Census_2010_Data_Cleanedup.xlsx",
+  sheet = "Census_2010_Neighborhoods", range = "CA7:CC101",
+  col_names = c("Pop.Under18", "drop", "Pop.65plus")) %>%
+  select(-drop) %>%
+  mutate(across(everything(), as.numeric))
+
+pdx_population <- bind_cols(pdx_population, pdx_age) %>%
+  mutate(Pop.18to64 = Total.Pop - Pop.Under18 - Pop.65plus)
+
+boundaries_with_pop <- pdx_boundaries %>%
+  mutate(Neighborhood = toupper(MAPLABEL)) %>%
+  left_join(pdx_population %>% mutate(Neighborhood = as.character(Neighborhood)),
+            by = "Neighborhood") %>%
+  mutate(
+    prop_under18 = Pop.Under18 / Total.Pop,
+    prop_18to64 = Pop.18to64 / Total.Pop,
+    prop_65plus = Pop.65plus / Total.Pop
+  )
+
+all_props <- na.omit(c(boundaries_with_pop$prop_under18,
+                        boundaries_with_pop$prop_18to64,
+                        boundaries_with_pop$prop_65plus))
+jenks_breaks <- classIntervals(all_props, n = 6, style = "jenks")$brks
+
+map_data <- boundaries_with_pop %>%
+  pivot_longer(cols = c(prop_under18, prop_18to64, prop_65plus),
+               names_to = "age_group", values_to = "proportion") %>%
+  mutate(
+    age_group = recode(age_group,
+      prop_under18 = "< 18", prop_18to64 = "18-64", prop_65plus = ">= 65") %>%
+      factor(levels = c("< 18", "18-64", ">= 65")),
+    prop_bin = cut(proportion, breaks = jenks_breaks, include.lowest = TRUE)
+  )
+```
+
+## The Data
+
+Two sources were joined together: Portland neighborhood boundary shapefiles from the City of Portland open data portal, and 2010 Census population data broken out by age group (under 18, 18-64, 65 and older) at the neighborhood level. The census data required some name-matching cleanup to align with the shapefile's neighborhood labels.
+
+---
+
+## The Audience
+
+City planners, public health researchers, or anyone interested in how age distribution maps onto urban geography in Portland.
+
+---
+
+## The Chart
+
+```{r echo=FALSE}
+ggplot(map_data) +
+  geom_sf(aes(fill = prop_bin)) +
+  geom_sf(data = river_boundaries, fill = "lightblue", size = 0.0) +
+  scale_fill_brewer(palette = "YlOrRd", name = "% of neighborhood", na.value = "grey80") +
+  facet_wrap(~age_group) +
+  ggtitle("Share of Population by Age Group, Jenks Breaks") +
+  theme_minimal() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank())
+```
+
+---
+
+## Representation
+
+Each panel shows one age group's share of its neighborhood's total population. The question is whether age concentrations are geographically clustered or spread uniformly across the city.
+
+---
+
+## How to Read It
+
+Darker fill means a higher proportion of that neighborhood belongs to the age group shown in that panel. Compare the three panels side by side; neighborhoods dark in the under-18 panel tend to be lighter in the 65+ panel, and vice versa.
+
+The break method is Jenks natural breaks, chosen after comparing equal interval, quantile, standard deviation, and Jenks. Jenks performed best because it kept the flat middle of the distribution from being lumped into the top bucket, making the geographic variation more visible.
+
+---
+
+## Visual Design
+
+A single sequential `YlOrRd` palette is shared across all three panels so comparisons are valid -- the same color means the same proportion in every panel. The Willamette River appears in light blue as a geographic point of interest (PoI) for those more familiar with the area. Axis text and ticks are removed since exact coordinates add nothing useful here.
+
+---
+
+## How I Made It
+
+```{r eval=FALSE}
+library(tidyverse)
+library(sf)
+library(readxl)
+library(classInt)
+
+pdx_boundaries <- st_read("data/Neighborhoods__Regions_-shp")
+river_boundaries <- st_read("data/Willamette_Columbia_River_Ordinary_High_Water-shp/")
+
+pdx_population <- read_excel("data/Census_2010_Data_Cleanedup.xlsx",
+  sheet = "Census_2010_Neighborhoods", range = "A7:B101",
+  col_names = c("Neighborhood", "Total.Pop")) %>%
+  mutate(Neighborhood = as.factor(Neighborhood))
+
+pdx_age <- read_excel("data/Census_2010_Data_Cleanedup.xlsx",
+  sheet = "Census_2010_Neighborhoods", range = "CA7:CC101",
+  col_names = c("Pop.Under18", "drop", "Pop.65plus")) %>%
+  select(-drop) %>%
+  mutate(across(everything(), as.numeric))
+
+pdx_population <- bind_cols(pdx_population, pdx_age) %>%
+  mutate(Pop.18to64 = Total.Pop - Pop.Under18 - Pop.65plus)
+
+boundaries_with_pop <- pdx_boundaries %>%
+  mutate(Neighborhood = toupper(MAPLABEL)) %>%
+  left_join(pdx_population %>% mutate(Neighborhood = as.character(Neighborhood)),
+            by = "Neighborhood") %>%
+  mutate(
+    prop_under18 = Pop.Under18 / Total.Pop,
+    prop_18to64 = Pop.18to64 / Total.Pop,
+    prop_65plus = Pop.65plus / Total.Pop
+  )
+
+all_props <- na.omit(c(boundaries_with_pop$prop_under18,
+                        boundaries_with_pop$prop_18to64,
+                        boundaries_with_pop$prop_65plus))
+jenks_breaks <- classIntervals(all_props, n = 6, style = "jenks")$brks
+
+boundaries_with_pop %>%
+  pivot_longer(cols = c(prop_under18, prop_18to64, prop_65plus),
+               names_to = "age_group", values_to = "proportion") %>%
+  mutate(
+    age_group = recode(age_group,
+      prop_under18 = "< 18", prop_18to64 = "18-64", prop_65plus = ">= 65") %>%
+      factor(levels = c("< 18", "18-64", ">= 65")),
+    prop_bin = cut(proportion, breaks = jenks_breaks, include.lowest = TRUE)
+  ) %>%
+  ggplot() +
+  geom_sf(aes(fill = prop_bin)) +
+  geom_sf(data = river_boundaries, fill = "lightblue", size = 0.0) +
+  scale_fill_brewer(palette = "YlOrRd", name = "% of neighborhood", na.value = "grey80") +
+  facet_wrap(~age_group) +
+  ggtitle("Share of Population by Age Group, Jenks Breaks") +
+  theme_minimal() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank())
+```

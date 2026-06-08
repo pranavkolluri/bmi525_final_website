@@ -1,0 +1,32 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "Pranav Kolluri"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - href: about.qmd
+        text: About
+      - text: Labs
+        menu:
+          - href: lab-moma.qmd
+            text: "Lab 2: MoMA"
+          - href: lab-color.qmd
+            text: "Lab 3: Color"
+          - href: lab-maps.qmd
+            text: "Lab 7: Maps"
+          - href: lab-shiny.qmd
+            text: "Lab 8: Shiny"
+      - href: final.qmd
+        text: Final Visualization
+  page-footer:
+    center: "Pranav Kolluri | BMI 525 | 2026"
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
