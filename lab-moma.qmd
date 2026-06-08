@@ -50,13 +50,13 @@ ggplot(moma_delay, aes(x = year_created, y = acquisition_delay)) +
 
 ## Representation
 
-The chart tries to answer the question: has MoMA gotten faster at acquiring work, and does that differ by artist gender? Each point is one painting. Position on x encodes when it was painted; position on y encodes how many years passed before MoMA acquired it.
+The chart tries to answer the question: has MoMA gotten faster at acquiring work, and does that differ by artist gender? Each point is one painting. Position on x encodes when it was painted; position on y encodes how many years passed before MoMA acquired it. On top of this, gender-specific trend curves are used to summarize the overall patterns, in a bid to show if any gender-based differences are consistent across the timeline or if they vary in different eras of the collection.
 
 ---
 
 ## How to Read It
 
-Points near the bottom were acquired quickly after being made. Points near the top sat outside the collection for a long time. The smooth curves try to summarize the trend for each gender group; follow them left to right to see how acquisition speed has changed across different eras of the collection.
+Points near the bottom were acquired quickly after being made. Points near the top sat outside the collection for a long time. The smooth curves try to summarize the trend for each gender group; follow them left to right to see how acquisition speed has changed across different eras of the collection. Note that the male and female curves are similar in shape but displaced vertically until around 1980, where they converge. 
 
 ---
 

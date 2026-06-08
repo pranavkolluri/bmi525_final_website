@@ -26,7 +26,7 @@ Potential flyers out of PDX or SEA who may want to better understand the trends 
 
 ## The Chart
 
-A multi-tab Shiny app with three views: a bar chart, a dual-axis line chart, and a scatter plot, each with a supporting summary table.
+A multi-tab Shiny app with three views: a bar chart, a dual-axis line chart, and a scatter plot, each with a supporting summary table. The bar chart is a simple horizontal bar showing average departure delay by carrier for a selected airport, with early departures indicated by bars to the left of zero and colored blue, and the opposite in red for late departures. The line chart shows how a selected airline's average delay and on-time percentage vary across the months of the year. The scatter plot shows the relationship between visibility and departure delay, with point size encoding precipitation.
 
 ---
 

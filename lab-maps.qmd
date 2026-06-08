@@ -61,7 +61,7 @@ Two sources were joined together: Portland neighborhood boundary shapefiles from
 
 ## The Audience
 
-City planners, public health researchers, or anyone interested in how age distribution maps onto urban geography in Portland.
+City planners, public health researchers, or anyone interested in how age distribution maps onto urban geography in Portland. I would wager that a more general audience of Portland residents would also find this interesting, though they may be less familiar with the specific neighborhoods and more interested in the overall geographic patterns than the exact numbers.
 
 ---
 
@@ -82,7 +82,7 @@ ggplot(map_data) +
 
 ## Representation
 
-Each panel shows one age group's share of its neighborhood's total population. The question is whether age concentrations are geographically clustered or spread uniformly across the city.
+Each panel shows one age group's share of its neighborhood's total population. The question is whether age concentrations are geographically clustered or spread uniformly across the city. This has the resolution of the original data, which is based on neighborhood-level data. It would have been nice to perhaps get even more granular data, but that was out of scope.
 
 ---
 
@@ -91,6 +91,8 @@ Each panel shows one age group's share of its neighborhood's total population. T
 Darker fill means a higher proportion of that neighborhood belongs to the age group shown in that panel. Compare the three panels side by side; neighborhoods dark in the under-18 panel tend to be lighter in the 65+ panel, and vice versa.
 
 The break method is Jenks natural breaks, chosen after comparing equal interval, quantile, standard deviation, and Jenks. Jenks performed best because it kept the flat middle of the distribution from being lumped into the top bucket, making the geographic variation more visible.
+
+Of curiousity, the graphic indicates that the elderly tend to live farther from the downtown areas of Portland. Similarily, this is also true of children. The super wide middle band of 18-64 year olds is fairly concentrated in the central neighborhoods.
 
 ---
 

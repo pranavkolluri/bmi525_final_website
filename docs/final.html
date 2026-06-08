@@ -418,11 +418,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>makeSeasonPlot <span class="ot">&lt;-</span> <span class="cf">function</span>(var) {</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  lbl <span class="ot">&lt;-</span> <span class="cf">switch</span>(var,</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"max_air_temp"</span>    <span class="ot">=</span> <span class="st">"Max Air Temp (°C)"</span>,</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"min_air_temp"</span>    <span class="ot">=</span> <span class="st">"Min Air Temp (°C)"</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"max_air_temp"</span> <span class="ot">=</span> <span class="st">"Max Air Temp (°C)"</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"min_air_temp"</span> <span class="ot">=</span> <span class="st">"Min Air Temp (°C)"</span>,</span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"max_ground_temp"</span> <span class="ot">=</span> <span class="st">"Max Ground Temp (°C)"</span>,</span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"min_ground_temp"</span> <span class="ot">=</span> <span class="st">"Min Ground Temp (°C)"</span>,</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"pressure"</span>        <span class="ot">=</span> <span class="st">"Pressure (Pa)"</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"pressure"</span> <span class="ot">=</span> <span class="st">"Pressure (Pa)"</span></span>
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  dat <span class="ot">&lt;-</span> weather <span class="sc">%&gt;%</span></span>

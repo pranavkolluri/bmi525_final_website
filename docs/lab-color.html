@@ -213,7 +213,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="the-data" class="level2">
 <h2 class="anchored" data-anchor-id="the-data">The Data</h2>
-<p>NYC flight departure data from the <code>nycflights13</code> package, covering all departures in 2013. Each row in the source data is one flight. For this chart the data is aggregated to mean departure delay by hour of day and month, giving a 19x12 grid of values.</p>
+<p>NYC flight departure data from the <code>nycflights13</code> package, covering all departures in 2013 from the gaggle of New York city area airports (JFK, LGA, EWR). Each row in the source data is one flight. For this chart the data is aggregated to mean departure delay by hour of day and month, giving a 19x12 grid of values.</p>
 <hr>
 </section>
 <section id="the-audience" class="level2">
@@ -236,7 +236,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="representation" class="level2">
 <h2 class="anchored" data-anchor-id="representation">Representation</h2>
-<p>The chart answers one question: when, across the year, do NYC flights tend to run late? The x-axis is hour of departure, the y-axis is month, and fill encodes mean departure delay in minutes.</p>
+<p>The chart answers one question: when, across the year, do NYC flights tend to run late? The x-axis is hour of departure, the y-axis is month, and fill encodes mean departure delay in minutes. The chart is a heatmap, which is a good choice for showing patterns across two categorical dimensions (month and hour) with a continuous value (mean delay). The grid layout makes it easy to compare values across both dimensions and spot clusters of high or low delays.</p>
 <hr>
 </section>
 <section id="how-to-read-it" class="level2">
