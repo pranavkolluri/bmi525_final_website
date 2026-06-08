@@ -306,12 +306,5 @@
     "title": "Lab 2: MoMA",
     "section": "How I Made It",
     "text": "How I Made It\n\nlibrary(tidyverse)\nlibrary(ggthemes)\n\nmoma_data &lt;- read_csv(\"data/artworks-cleaned.csv\")\n\nmoma_delay &lt;- moma_data %&gt;%\n  filter(!is.na(year_created), !is.na(year_acquired)) %&gt;%\n  mutate(acquisition_delay = year_acquired - year_created) %&gt;%\n  filter(acquisition_delay &gt;= 0)\n\nggplot(moma_delay, aes(x = year_created, y = acquisition_delay)) +\n  geom_point(aes(color = artist_gender), alpha = 0.3) +\n  geom_smooth(aes(color = artist_gender), method = \"loess\", se = FALSE) +\n  labs(\n    title = \"Time Between Creation and Acquisition of MoMA Paintings\",\n    subtitle = \"Acquisition delays decrease over time, with differences by artist gender\",\n    x = \"Year painted\",\n    y = \"Years until acquisition\",\n    color = \"Artist gender\"\n  ) +\n  theme_fivethirtyeight()"
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Pranav Kolluri",
-    "section": "",
-    "text": "I’m a first-year Biomedical Engineering PhD student at OHSU, working in Dr. Xubo Song’s lab on multimodal single-cell data integration and representation learning.\nThis site collects work from BMI 525: Data Visualization for Biomedical Informatics. The Labs section features selected visualizations from the course. The Final Visualization page covers an interactive exploration of NASA Curiosity rover weather data from Gale Crater."
   }
 ]
